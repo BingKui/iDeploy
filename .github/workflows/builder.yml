@@ -77,9 +77,9 @@ jobs:
         if: matrix.platform == 'windows-latest'
         run: |
           curl https://dl.min.io/client/mc/release/windows-amd64/mc.exe
-          ./mc.exe --help
-          ./mc.exe alias set deploy $MINIO_ENDPOINT $MINIO_ACCESS_KEY $MINIO_SECRET_KEY --api S3v4
-          ./mc.exe mirror --overwrite $SOURCE_DIR "deploy/$MINIO_BUCKET$TARGET_DIR"
+          mc.exe --help
+          mc.exe alias set deploy $MINIO_ENDPOINT $MINIO_ACCESS_KEY $MINIO_SECRET_KEY --api S3v4
+          mc.exe mirror --overwrite $SOURCE_DIR "deploy/$MINIO_BUCKET$TARGET_DIR"
         env:
           SOURCE_DIR: "src-tauri/target/release/bundle/msi/*"
           TARGET_DIR: "/iDeploy"
