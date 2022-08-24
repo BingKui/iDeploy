@@ -60,7 +60,7 @@ jobs:
       - name: Linux 环境
         if: matrix.platform == 'ubuntu-latest'
         run: |
-          yum install weget -y
+          apt-get install weget -y
           weget https://dl.min.io/client/mc/release/linux-amd64/mc
           chmod +x mc
           ./mc --help
