@@ -27,18 +27,16 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libgtk-3-dev webkit2gtk-4.0 libappindicator3-dev librsvg2-dev patchelf
       - name: 安装依赖 & 打包
-        if: matrix.platform != 'macos-latest'
         run: yarn && yarn tauri build
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
           TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
-      - name: 安装依赖 & Mac 打包
+      - name: Mac M 系列芯片打包
         if: matrix.platform == 'macos-latest'
         run: |
-          yarn
+          rustup target add aarch64-apple-darwin
           yarn tauri build --target aarch64-apple-darwin
-          yarn tauri build --target x86_64-apple-darwin
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
@@ -50,8 +48,10 @@ jobs:
           mc --help
           mc alias set deploy $MINIO_ENDPOINT $MINIO_ACCESS_KEY $MINIO_SECRET_KEY --api S3v4
           mc mirror --overwrite $SOURCE_DIR "deploy/$MINIO_BUCKET$TARGET_DIR"
+          mc mirror --overwrite $SOURCE_DMG_DIR "deploy/$MINIO_BUCKET$TARGET_DIR"
         env:
-          SOURCE_DIR: "src-tauri/target/release/bundle/macos/i_deploy_*.app.tar.*"
+          SOURCE_DMG_DIR: "src-tauri/target/release/bundle/dmg/iDeploy_*.dmg"
+          SOURCE_DIR: "src-tauri/target/release/bundle/macos/iDeploy_*.app.tar.*"
           TARGET_DIR: "/iDeploy"
           MINIO_BUCKET: ${{ secrets.MINIO_BUCKET }}
           MINIO_ENDPOINT: ${{ secrets.MINIO_ENDPOINT }}
@@ -67,7 +67,7 @@ jobs:
           ./mc alias set deploy $MINIO_ENDPOINT $MINIO_ACCESS_KEY $MINIO_SECRET_KEY --api S3v4
           ./mc mirror --overwrite $SOURCE_DIR "deploy/$MINIO_BUCKET$TARGET_DIR"
         env:
-          SOURCE_DIR: "src-tauri/target/release/bundle/appimage/i_deploy_*.AppImage.*"
+          SOURCE_DIR: "src-tauri/target/release/bundle/appimage/i-deploy_*.AppImage.*"
           TARGET_DIR: "/iDeploy"
           MINIO_BUCKET: ${{ secrets.MINIO_BUCKET }}
           MINIO_ENDPOINT: ${{ secrets.MINIO_ENDPOINT }}
