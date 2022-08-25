@@ -93,9 +93,9 @@ jobs:
           D:\a\iDeploy\iDeploy\mc.exe cp $SOURCE_DIR "deploy/$MINIO_BUCKET$TARGET_DIR"
           D:\a\iDeploy\iDeploy\mc.exe cp $SOURCE_MSI_DIR "deploy/$MINIO_BUCKET$TARGET_DIR"
         env:
-          SOURCE_DIR: "src-tauri\\target\\release\\bundle\\msi\\iDeploy_*.msi.zip"
-          SOURCE_MSI_DIR: "src-tauri\\target\\release\\bundle/msi/iDeploy_*.msi"
-          TARGET_DIR: "/iDeploy/windows"
+          SOURCE_DIR: src-tauri\target\release\bundle\msi\iDeploy_*.msi.zip
+          SOURCE_MSI_DIR: src-tauri\target\release\bundle\msi\iDeploy_*.msi
+          TARGET_DIR: /iDeploy/windows
           MINIO_BUCKET: ${{ secrets.MINIO_BUCKET }}
           MINIO_ENDPOINT: ${{ secrets.MINIO_ENDPOINT }}
           MINIO_ACCESS_KEY: ${{ secrets.MINIO_ACCESS_KEY }}
