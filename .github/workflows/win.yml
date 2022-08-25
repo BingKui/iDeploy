@@ -24,6 +24,9 @@ jobs:
       - name: 安装 Go 环境
         run: |
           go version
+          go get -d github.com/minio/mc
+          cd ${GOPATH}/src/github.com/minio/mc
+          make
       # - name: 安装 Go 环境
       #   run: |
       #     # git clone https://go.googlesource.com/go goroot
