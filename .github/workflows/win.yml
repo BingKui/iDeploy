@@ -90,8 +90,10 @@ jobs:
           bitsadmin.exe /transfer "下载mc.exe" https://dl.min.io/client/mc/release/windows-amd64/mc.exe D:\a\iDeploy\iDeploy\mc.exe
           # D:\a\iDeploy\iDeploy\mc.exe --help
           D:\a\iDeploy\iDeploy\mc.exe alias -h
-          # echo $MINIO_ENDPOINT $MINIO_ACCESS_KEY $MINIO_SECRET_KEY
-          # D:\a\iDeploy\iDeploy\mc.exe alias set deploy $MINIO_ENDPOINT $MINIO_ACCESS_KEY $MINIO_SECRET_KEY --api S3v4
+          echo "$MINIO_ENDPOINT"
+          echo "$MINIO_ACCESS_KEY"
+          echo "$MINIO_SECRET_KEY"
+          D:\a\iDeploy\iDeploy\mc.exe alias set deploy $MINIO_ENDPOINT $MINIO_ACCESS_KEY $MINIO_SECRET_KEY --api S3v4
           # D:\a\iDeploy\iDeploy\mc.exe cp $SOURCE_DIR "deploy/$MINIO_BUCKET$TARGET_DIR"
           # D:\a\iDeploy\iDeploy\mc.exe cp $SOURCE_MSI_DIR "deploy/$MINIO_BUCKET$TARGET_DIR"
         env:
