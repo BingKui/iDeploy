@@ -21,9 +21,17 @@ jobs:
       #   uses: actions/setup-node@v1
       #   with:
       #     node-version: 16
-      - name: Windows 环境
-        if: matrix.platform == 'windows-latest'
+      - name: 安装 Go 环境
         run: |
-          curl https://dl.min.io/client/mc/release/windows-amd64/mc.exe
-          dir
-          mc.exe --help
+          git clone https://go.googlesource.com/go goroot
+          cd goroot
+          git checkout master
+          cd src
+          ./all.bat
+          go version
+      # - name: Windows 环境
+      #   if: matrix.platform == 'windows-latest'
+      #   run: |
+      #     curl https://dl.min.io/client/mc/release/windows-amd64/mc.exe
+      #     dir
+      #     mc.exe --help
