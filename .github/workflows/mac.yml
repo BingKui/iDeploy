@@ -2,7 +2,7 @@ name: Mac Deploy
 
 on:
   push:
-    branches:
+    tags:
       - "mac-v*"
   workflow_dispatch:
 
