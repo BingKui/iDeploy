@@ -86,11 +86,11 @@ jobs:
       - name: Windows 环境
         if: matrix.platform == 'windows-latest'
         run: |
-          curl https://dl.min.io/client/mc/release/windows-amd64/mc.exe
-          mc.exe --help
-          mc.exe alias set deploy $MINIO_ENDPOINT $MINIO_ACCESS_KEY $MINIO_SECRET_KEY --api S3v4
-          mc.exe cp $SOURCE_DIR "deploy/$MINIO_BUCKET$TARGET_DIR"
-          mc.exe cp $SOURCE_MSI_DIR "deploy/$MINIO_BUCKET$TARGET_DIR"
+          bitsadmin.exe /transfer "下载mc.exe" https://dl.min.io/client/mc/release/windows-amd64/mc.exe D:\a\iDeploy\iDeploy\mc.exe
+          D:\a\iDeploy\iDeploy\mc.exe --help
+          D:\a\iDeploy\iDeploy\mc.exe alias set deploy $MINIO_ENDPOINT $MINIO_ACCESS_KEY $MINIO_SECRET_KEY --api S3v4
+          D:\a\iDeploy\iDeploy\mc.exe cp $SOURCE_DIR "deploy/$MINIO_BUCKET$TARGET_DIR"
+          D:\a\iDeploy\iDeploy\mc.exe cp $SOURCE_MSI_DIR "deploy/$MINIO_BUCKET$TARGET_DIR"
         env:
           SOURCE_DIR: "src-tauri/target/release/bundle/msi/iDeploy_*.msi.zip"
           SOURCE_MSI_DIR: "src-tauri/target/release/bundle/msi/iDeploy_*.msi"
@@ -104,16 +104,32 @@ jobs:
         if: matrix.platform == 'ubuntu-latest'
         with:
           name: linux-updater-artifacts
-          path: ./target/release/bundle/deb/i-deploy_*.deb
+          path: src-tauri/target/release/bundle/deb/i-deploy_*.deb
       - name: 上传 Release - Windows
         uses: actions/upload-artifact@v2
         if: matrix.platform == 'windows-latest'
         with:
           name: windows-updater-artifacts
-          path: ./target/release/bundle/msi/iDeploy_*.msi
+          path: src-tauri/target/release/bundle/msi/iDeploy_*.msi
       - name: 上传 Release - Mac
         uses: actions/upload-artifact@v2
         if: matrix.platform == 'macos-latest'
         with:
           name: macos-updater-artifacts
-          path: ./target/*/release/bundle/dmg/iDeploy_*.dmg
+          path: src-tauri/target/*/release/bundle/dmg/iDeploy_*.dmg
+      - name: 下载资源
+        uses: actions/download-artifact@v3
+        with:
+          path: ./builder
+          
+      - name: Display structure of downloaded files
+        run: ls -R
+        working-directory: ./builder
+
+      - name: 创建 Release 版本
+        uses: ncipollo/release-action@v1
+        with:
+          allowUpdates: true
+          artifacts: "./target/release/bundle/deb/i-deploy_*.deb"
+          bodyFile: "body.md"
+          token: ${{ secrets.YOUR_GITHUB_TOKEN }}
