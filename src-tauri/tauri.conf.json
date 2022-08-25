@@ -50,7 +50,7 @@
     "updater": {
       "active": true,
       "endpoints": [
-        "https://oss.uiseed.cn/app/iHost/latest.json"
+        "https://oss.uiseed.cn/app/iDeploy/latest.json"
       ],
       "dialog": true,
       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDYxRDU5QTI2OTlEOUM5QjMKUldTenlkbVpKcHJWWWMvcW80SnhGR2Q2MXlZZGl5TmFZZFNwb2FsUG44eVJjWDZ5T0FVbFk2Ui8K"
