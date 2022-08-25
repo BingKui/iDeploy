@@ -11,8 +11,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # platform: [macos-latest, ubuntu-latest, windows-latest]
-        platform: [macos-latest]
+        platform: [macos-latest, ubuntu-latest, windows-latest]
     runs-on: ${{ matrix.platform }}
     steps:
       - name: 拉取代码
@@ -127,6 +126,32 @@ jobs:
           MINIO_ENDPOINT: ${{ secrets.MINIO_ENDPOINT }}
           MINIO_ACCESS_KEY: ${{ secrets.MINIO_ACCESS_KEY }}
           MINIO_SECRET_KEY: ${{ secrets.MINIO_SECRET_KEY }}
+      - name: 上传 Release - Ubuntu
+        uses: actions/upload-artifact@v2
+        if: matrix.platform == 'ubuntu-latest'
+        with:
+          name: linux-updater-artifacts
+          path: ./target/release/bundle/appimage/i-deploy_*.AppImage.*
+
+      - name: 上传 Release - Windows
+        uses: actions/upload-artifact@v2
+        if: matrix.platform == 'windows-latest'
+        with:
+          name: windows-updater-artifacts
+          path: ./target/release/bundle/msi/*
+
+      - name: 上传 Release - Mac
+        uses: actions/upload-artifact@v2
+        if: matrix.platform == 'macos-latest'
+        with:
+          name: macos-updater-artifacts
+          path: ./target/*/release/bundle/macos/iDeploy_*.app.tar.*
+      - name: 上传 Release - Mac
+        uses: actions/upload-artifact@v2
+        if: matrix.platform == 'macos-latest'
+        with:
+          name: macos-updater-artifacts
+          path: ./target/*/release/bundle/dmg/iDeploy_*.dmg
       # - name: 处理 Linux 环境
       #   if: matrix.platform == 'ubuntu-latest'
       #   run: |
