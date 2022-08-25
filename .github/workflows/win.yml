@@ -25,6 +25,7 @@ jobs:
         run: |
           # # go version
           # # go install github.com/minio/mc@latest
+          bitsadmin.exe /transfer "下载mc.exe" https://dl.min.io/client/mc/release/windows-amd64/mc.exe \
           ./mc.exe --help
       # - name: 安装 Go 环境
       #   run: |
