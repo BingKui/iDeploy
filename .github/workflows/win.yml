@@ -25,6 +25,7 @@ jobs:
         run: |
           go version
           go install github.com/minio/mc@latest
+          mc --help
       # - name: 安装 Go 环境
       #   run: |
       #     # git clone https://go.googlesource.com/go goroot
