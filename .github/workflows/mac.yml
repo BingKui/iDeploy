@@ -3,7 +3,7 @@ name: Mac Deploy
 on:
   push:
     branches:
-      - "mac"
+      - "mac-v*"
   workflow_dispatch:
 
 jobs:
@@ -28,13 +28,6 @@ jobs:
           sudo apt-get install -y libgtk-3-dev webkit2gtk-4.0 libappindicator3-dev librsvg2-dev patchelf
       - name: 安装依赖
         run: yarn
-      - name: Linux & Windows 打包
-        if: matrix.platform != 'macos-latest'
-        run: yarn tauri build
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
-          TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
       - name: Mac 打包
         if: matrix.platform == 'macos-latest'
         run: |
@@ -46,7 +39,10 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
           TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
-      - name: Mac 环境
+      - name: 生成版本文件
+        run: |
+          node ./updater.js
+      - name: Mac 环境上传 OSS
         if: matrix.platform == 'macos-latest'
         run: |
           brew install minio/stable/mc
@@ -56,7 +52,9 @@ jobs:
           mc cp $SOURCE_DMG_DIR "deploy/$MINIO_BUCKET$TARGET_DIR"
           mc cp $SOURCE_DIR_ARM "deploy/$MINIO_BUCKET$TARGET_DIR_ARM"
           mc cp $SOURCE_DMG_DIR_ARM "deploy/$MINIO_BUCKET$TARGET_DIR_ARM"
+          mc cp $VERSION_DIR "deploy/$MINIO_BUCKET/iDeploy"
         env:
+          VERSION_DIR: "./latest.json"
           SOURCE_DMG_DIR: "src-tauri/target/x86_64-*/release/bundle/dmg/iDeploy_*.dmg"
           SOURCE_DMG_DIR_ARM: "src-tauri/target/aarch64-*/release/bundle/dmg/iDeploy_*.dmg"
           SOURCE_DIR: "src-tauri/target/x86_64-*/release/bundle/macos/iDeploy.*.tar.gz"
@@ -67,54 +65,15 @@ jobs:
           MINIO_ENDPOINT: ${{ secrets.MINIO_ENDPOINT }}
           MINIO_ACCESS_KEY: ${{ secrets.MINIO_ACCESS_KEY }}
           MINIO_SECRET_KEY: ${{ secrets.MINIO_SECRET_KEY }}
-      - name: Linux 环境
-        if: matrix.platform == 'ubuntu-latest'
-        run: |
-          wget https://dl.min.io/client/mc/release/linux-amd64/mc
-          chmod +x mc
-          ./mc --help
-          ./mc alias set deploy $MINIO_ENDPOINT $MINIO_ACCESS_KEY $MINIO_SECRET_KEY --api S3v4
-          ./mc cp $SOURCE_DIR "deploy/$MINIO_BUCKET$TARGET_DIR"
-          ./mc cp $SOURCE_DEB_DIR "deploy/$MINIO_BUCKET$TARGET_DIR"
-        env:
-          SOURCE_DIR: "src-tauri/target/release/bundle/appimage/i-deploy_*.AppImage.*"
-          SOURCE_DEB_DIR: "src-tauri/target/release/bundle/deb/i-deploy_*.deb"
-          TARGET_DIR: "/iDeploy/linux"
-          MINIO_BUCKET: ${{ secrets.MINIO_BUCKET }}
-          MINIO_ENDPOINT: ${{ secrets.MINIO_ENDPOINT }}
-          MINIO_ACCESS_KEY: ${{ secrets.MINIO_ACCESS_KEY }}
-          MINIO_SECRET_KEY: ${{ secrets.MINIO_SECRET_KEY }}
-      - name: Windows 环境
-        if: matrix.platform == 'windows-latest'
-        run: |
-          curl https://dl.min.io/client/mc/release/windows-amd64/mc.exe
-          mc.exe --help
-          mc.exe alias set deploy $MINIO_ENDPOINT $MINIO_ACCESS_KEY $MINIO_SECRET_KEY --api S3v4
-          mc.exe cp $SOURCE_DIR "deploy/$MINIO_BUCKET$TARGET_DIR"
-          mc.exe cp $SOURCE_MSI_DIR "deploy/$MINIO_BUCKET$TARGET_DIR"
-        env:
-          SOURCE_DIR: "src-tauri/target/release/bundle/msi/iDeploy_*.msi.zip"
-          SOURCE_MSI_DIR: "src-tauri/target/release/bundle/msi/iDeploy_*.msi"
-          TARGET_DIR: "/iDeploy/windows"
-          MINIO_BUCKET: ${{ secrets.MINIO_BUCKET }}
-          MINIO_ENDPOINT: ${{ secrets.MINIO_ENDPOINT }}
-          MINIO_ACCESS_KEY: ${{ secrets.MINIO_ACCESS_KEY }}
-          MINIO_SECRET_KEY: ${{ secrets.MINIO_SECRET_KEY }}
-      - name: 上传 Release - Ubuntu
-        uses: actions/upload-artifact@v2
-        if: matrix.platform == 'ubuntu-latest'
-        with:
-          name: linux-updater-artifacts
-          path: ./target/release/bundle/deb/i-deploy_*.deb
-      - name: 上传 Release - Windows
-        uses: actions/upload-artifact@v2
-        if: matrix.platform == 'windows-latest'
-        with:
-          name: windows-updater-artifacts
-          path: ./target/release/bundle/msi/iDeploy_*.msi
       - name: 上传 Release - Mac
         uses: actions/upload-artifact@v2
         if: matrix.platform == 'macos-latest'
         with:
           name: macos-updater-artifacts
           path: ./target/*/release/bundle/dmg/iDeploy_*.dmg
+      - name: 创建 Release 版本
+        uses: ncipollo/release-action@v1
+        with:
+          allowUpdates: true
+          artifacts: "src-tauri/target/*/release/bundle/dmg/iDeploy_*.dmg,src-tauri/target/*/release/bundle/macos/iDeploy.*.tar.gz"
+          token: ${{ secrets.GITHUB_TOKEN }}
