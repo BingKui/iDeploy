@@ -23,9 +23,10 @@ jobs:
       #     node-version: 16
       - name: 测试环境
         run: |
-          # go version
-          # go install github.com/minio/mc@latest
-          ./mc.exe --help
+          # # go version
+          # # go install github.com/minio/mc@latest
+          # ./mc.exe --help
+          dir
       # - name: 安装 Go 环境
       #   run: |
       #     # git clone https://go.googlesource.com/go goroot
