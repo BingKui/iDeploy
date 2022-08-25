@@ -57,8 +57,8 @@ jobs:
         run: |
           brew install minio/stable/mc
           mc alias set deploy $MINIO_ENDPOINT $MINIO_ACCESS_KEY $MINIO_SECRET_KEY --api S3v4
-          mc cp --overwrite $SOURCE_DIR "deploy/$MINIO_BUCKET$TARGET_DIR"
-          mc cp --overwrite $SOURCE_DMG_DIR "deploy/$MINIO_BUCKET$TARGET_DIR"
+          mc cp $SOURCE_DIR "deploy/$MINIO_BUCKET$TARGET_DIR"
+          mc cp $SOURCE_DMG_DIR "deploy/$MINIO_BUCKET$TARGET_DIR"
         env:
           SOURCE_DMG_DIR: "src-tauri/target/*/release/bundle/dmg/iDeploy_*.dmg"
           SOURCE_DIR: "src-tauri/target/*/release/bundle/macos/iDeploy.*.tar.*"
