@@ -1,0 +1,29 @@
+name: Windows Test
+
+on:
+  push:
+    branches:
+      - "main"
+  workflow_dispatch:
+
+jobs:
+  release:
+    strategy:
+      fail-fast: false
+      matrix:
+        # platform: [macos-latest, ubuntu-latest, windows-latest]
+        platform: [windows-latest]
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - name: 拉取代码
+        uses: actions/checkout@v2
+      # - name: 设置 Node 环境
+      #   uses: actions/setup-node@v1
+      #   with:
+      #     node-version: 16
+      - name: Windows 环境
+        if: matrix.platform == 'windows-latest'
+        run: |
+          curl https://dl.min.io/client/mc/release/windows-amd64/mc.exe
+          dir
+          mc.exe --help
