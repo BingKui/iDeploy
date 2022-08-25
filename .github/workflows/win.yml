@@ -11,7 +11,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: [macos-latest, ubuntu-latest, windows-latest]
+        # platform: [macos-latest, ubuntu-latest, windows-latest]
+        platform: [windows-latest]
     runs-on: ${{ matrix.platform }}
     steps:
       - name: 拉取代码
@@ -130,7 +131,6 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           allowUpdates: true
-          tags: "v0.0.1"
+          tag: "v0.0.1"
           artifacts: "./builder/*"
-          bodyFile: "body.md"
           token: ${{ secrets.GITHUB_TOKEN }}
