@@ -60,8 +60,8 @@ jobs:
           mc mirror --overwrite $SOURCE_DIR "deploy/$MINIO_BUCKET$TARGET_DIR"
           mc mirror --overwrite $SOURCE_DMG_DIR "deploy/$MINIO_BUCKET$TARGET_DIR"
         env:
-          SOURCE_DMG_DIR: "src-tauri/target/x86_64-apple-darwin/release/bundle/dmg/iDeploy_*.dmg"
-          SOURCE_DIR: "src-tauri/target/x86_64-apple-darwin/release/bundle/macos/iDeploy.*.tar.*"
+          SOURCE_DMG_DIR: "src-tauri/target/*/release/bundle/dmg/iDeploy_*.dmg"
+          SOURCE_DIR: "src-tauri/target/*/release/bundle/macos/iDeploy.*.tar.*"
           TARGET_DIR: "/iDeploy"
           MINIO_BUCKET: ${{ secrets.MINIO_BUCKET }}
           MINIO_ENDPOINT: ${{ secrets.MINIO_ENDPOINT }}
