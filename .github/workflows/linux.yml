@@ -3,7 +3,7 @@ name: Mac Deploy
 on:
   push:
     branches:
-      - "dev"
+      - "main"
   workflow_dispatch:
 
 jobs:
@@ -11,7 +11,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: [macos-latest, ubuntu-latest, windows-latest]
+        # platform: [macos-latest, ubuntu-latest, windows-latest]
+        platform: [ubuntu-latest]
     runs-on: ${{ matrix.platform }}
     steps:
       - name: 拉取代码
@@ -34,17 +35,17 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
           TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
-      - name: Mac 打包
-        if: matrix.platform == 'macos-latest'
-        run: |
-          rustup target add x86_64-apple-darwin
-          rustup target add aarch64-apple-darwin
-          yarn tauri build --target x86_64-apple-darwin
-          yarn tauri build --target aarch64-apple-darwin
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
-          TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
+      # - name: Mac 打包
+      #   if: matrix.platform == 'macos-latest'
+      #   run: |
+      #     rustup target add x86_64-apple-darwin
+      #     rustup target add aarch64-apple-darwin
+      #     yarn tauri build --target x86_64-apple-darwin
+      #     yarn tauri build --target aarch64-apple-darwin
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #     TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
+      #     TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
       # - name: Mac M 系列芯片打包
       #   if: matrix.platform == 'macos-latest'
       #   run: |
@@ -69,31 +70,31 @@ jobs:
       #     MINIO_ENDPOINT: ${{ secrets.MINIO_ENDPOINT }}
       #     MINIO_ACCESS_KEY: ${{ secrets.MINIO_ACCESS_KEY }}
       #     MINIO_SECRET_KEY: ${{ secrets.MINIO_SECRET_KEY }}
-      - name: Mac 环境
-        if: matrix.platform == 'macos-latest'
-        run: |
-          brew install minio/stable/mc
-          mc --help
-          mc alias set deploy $MINIO_ENDPOINT $MINIO_ACCESS_KEY $MINIO_SECRET_KEY --api S3v4
-          mc cp $SOURCE_DIR "deploy/$MINIO_BUCKET$TARGET_DIR"
-          mc cp $SOURCE_DMG_DIR "deploy/$MINIO_BUCKET$TARGET_DIR"
-          mc cp $SOURCE_DIR_ARM "deploy/$MINIO_BUCKET$TARGET_DIR_ARM"
-          mc cp $SOURCE_DMG_DIR_ARM "deploy/$MINIO_BUCKET$TARGET_DIR_ARM"
-        env:
-          SOURCE_DMG_DIR: "src-tauri/target/x86_64-*/release/bundle/dmg/iDeploy_*.dmg"
-          SOURCE_DMG_DIR_ARM: "src-tauri/target/aarch64-*/release/bundle/dmg/iDeploy_*.dmg"
-          SOURCE_DIR: "src-tauri/target/x86_64-*/release/bundle/macos/iDeploy.*.tar.gz"
-          SOURCE_DIR_ARM: "src-tauri/target/aarch64-*/release/bundle/macos/iDeploy.*.tar.gz"
-          TARGET_DIR: "/iDeploy/x86"
-          TARGET_DIR_ARM: "/iDeploy/arm"
-          MINIO_BUCKET: ${{ secrets.MINIO_BUCKET }}
-          MINIO_ENDPOINT: ${{ secrets.MINIO_ENDPOINT }}
-          MINIO_ACCESS_KEY: ${{ secrets.MINIO_ACCESS_KEY }}
-          MINIO_SECRET_KEY: ${{ secrets.MINIO_SECRET_KEY }}
+      # - name: Mac 环境
+      #   if: matrix.platform == 'macos-latest'
+      #   run: |
+      #     brew install minio/stable/mc
+      #     mc --help
+      #     mc alias set deploy $MINIO_ENDPOINT $MINIO_ACCESS_KEY $MINIO_SECRET_KEY --api S3v4
+      #     mc cp $SOURCE_DIR "deploy/$MINIO_BUCKET$TARGET_DIR"
+      #     mc cp $SOURCE_DMG_DIR "deploy/$MINIO_BUCKET$TARGET_DIR"
+      #     mc cp $SOURCE_DIR_ARM "deploy/$MINIO_BUCKET$TARGET_DIR_ARM"
+      #     mc cp $SOURCE_DMG_DIR_ARM "deploy/$MINIO_BUCKET$TARGET_DIR_ARM"
+      #   env:
+      #     SOURCE_DMG_DIR: "src-tauri/target/x86_64-*/release/bundle/dmg/iDeploy_*.dmg"
+      #     SOURCE_DMG_DIR_ARM: "src-tauri/target/aarch64-*/release/bundle/dmg/iDeploy_*.dmg"
+      #     SOURCE_DIR: "src-tauri/target/x86_64-*/release/bundle/macos/iDeploy.*.tar.gz"
+      #     SOURCE_DIR_ARM: "src-tauri/target/aarch64-*/release/bundle/macos/iDeploy.*.tar.gz"
+      #     TARGET_DIR: "/iDeploy/x86"
+      #     TARGET_DIR_ARM: "/iDeploy/arm"
+      #     MINIO_BUCKET: ${{ secrets.MINIO_BUCKET }}
+      #     MINIO_ENDPOINT: ${{ secrets.MINIO_ENDPOINT }}
+      #     MINIO_ACCESS_KEY: ${{ secrets.MINIO_ACCESS_KEY }}
+      #     MINIO_SECRET_KEY: ${{ secrets.MINIO_SECRET_KEY }}
       - name: Linux 环境
         if: matrix.platform == 'ubuntu-latest'
         run: |
-          apt-get install weget -y
+          sudo apt-get install weget -y
           weget https://dl.min.io/client/mc/release/linux-amd64/mc
           chmod +x mc
           ./mc --help
@@ -106,20 +107,20 @@ jobs:
           MINIO_ENDPOINT: ${{ secrets.MINIO_ENDPOINT }}
           MINIO_ACCESS_KEY: ${{ secrets.MINIO_ACCESS_KEY }}
           MINIO_SECRET_KEY: ${{ secrets.MINIO_SECRET_KEY }}
-      - name: Windows 环境
-        if: matrix.platform == 'windows-latest'
-        run: |
-          curl https://dl.min.io/client/mc/release/windows-amd64/mc.exe
-          mc.exe --help
-          mc.exe alias set deploy $MINIO_ENDPOINT $MINIO_ACCESS_KEY $MINIO_SECRET_KEY --api S3v4
-          mc.exe mirror --overwrite $SOURCE_DIR "deploy/$MINIO_BUCKET$TARGET_DIR"
-        env:
-          SOURCE_DIR: "src-tauri/target/release/bundle/msi/*"
-          TARGET_DIR: "/iDeploy/windows"
-          MINIO_BUCKET: ${{ secrets.MINIO_BUCKET }}
-          MINIO_ENDPOINT: ${{ secrets.MINIO_ENDPOINT }}
-          MINIO_ACCESS_KEY: ${{ secrets.MINIO_ACCESS_KEY }}
-          MINIO_SECRET_KEY: ${{ secrets.MINIO_SECRET_KEY }}
+      # - name: Windows 环境
+      #   if: matrix.platform == 'windows-latest'
+      #   run: |
+      #     curl https://dl.min.io/client/mc/release/windows-amd64/mc.exe
+      #     mc.exe --help
+      #     mc.exe alias set deploy $MINIO_ENDPOINT $MINIO_ACCESS_KEY $MINIO_SECRET_KEY --api S3v4
+      #     mc.exe mirror --overwrite $SOURCE_DIR "deploy/$MINIO_BUCKET$TARGET_DIR"
+      #   env:
+      #     SOURCE_DIR: "src-tauri/target/release/bundle/msi/*"
+      #     TARGET_DIR: "/iDeploy/windows"
+      #     MINIO_BUCKET: ${{ secrets.MINIO_BUCKET }}
+      #     MINIO_ENDPOINT: ${{ secrets.MINIO_ENDPOINT }}
+      #     MINIO_ACCESS_KEY: ${{ secrets.MINIO_ACCESS_KEY }}
+      #     MINIO_SECRET_KEY: ${{ secrets.MINIO_SECRET_KEY }}
       - name: 上传 Release - Ubuntu
         uses: actions/upload-artifact@v2
         if: matrix.platform == 'ubuntu-latest'
