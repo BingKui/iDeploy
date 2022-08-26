@@ -75,5 +75,5 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           allowUpdates: true
-          artifacts: "src-tauri/target/*/release/bundle/dmg/iDeploy_*.dmg,src-tauri/target/*/release/bundle/macos/iDeploy.*.tar.gz"
+          artifacts: "src-tauri/target/*/release/bundle/dmg/iDeploy_*.dmg,src-tauri/target/*/release/bundle/macos/iDeploy.*.tar.*"
           token: ${{ secrets.GITHUB_TOKEN }}
