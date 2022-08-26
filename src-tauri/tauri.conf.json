@@ -7,7 +7,7 @@
   },
   "package": {
     "productName": "iDeploy",
-    "version": "0.0.3"
+    "version": "0.0.4"
   },
   "tauri": {
     "allowlist": {
@@ -52,7 +52,7 @@
       "endpoints": [
         "https://oss.uiseed.cn/app/iDeploy/latest.json"
       ],
-      "dialog": true,
+      "dialog": false,
       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDYxRDU5QTI2OTlEOUM5QjMKUldTenlkbVpKcHJWWWMvcW80SnhGR2Q2MXlZZGl5TmFZZFNwb2FsUG44eVJjWDZ5T0FVbFk2Ui8K"
     },
     "windows": [{

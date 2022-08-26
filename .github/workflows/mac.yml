@@ -57,8 +57,8 @@ jobs:
           VERSION_DIR: "./latest.json"
           SOURCE_DMG_DIR: "src-tauri/target/x86_64-*/release/bundle/dmg/iDeploy_*.dmg"
           SOURCE_DMG_DIR_ARM: "src-tauri/target/aarch64-*/release/bundle/dmg/iDeploy_*.dmg"
-          SOURCE_DIR: "src-tauri/target/x86_64-*/release/bundle/macos/iDeploy.*.tar.gz"
-          SOURCE_DIR_ARM: "src-tauri/target/aarch64-*/release/bundle/macos/iDeploy.*.tar.gz"
+          SOURCE_DIR: "src-tauri/target/x86_64-*/release/bundle/macos/iDeploy.*.tar.*"
+          SOURCE_DIR_ARM: "src-tauri/target/aarch64-*/release/bundle/macos/iDeploy.*.tar.*"
           TARGET_DIR: "/iDeploy/x86"
           TARGET_DIR_ARM: "/iDeploy/arm"
           MINIO_BUCKET: ${{ secrets.MINIO_BUCKET }}

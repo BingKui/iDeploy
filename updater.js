@@ -17,6 +17,9 @@ const getLinuxName = (name) => {
 const content = fs.readFileSync('./package.json', {
     encoding: 'utf-8'
 });
+// 获取 x86 signature
+const x86Signature = fs.readFileSync('./src-tauri/target/x86_64-apple-darwin/release/bundle/macos/iDeploy.app.tar.gz.sig', { encoding: 'utf-8' });
+const armSignature = fs.readFileSync('./src-tauri/target/aarch64-apple-darwin/release/bundle/macos/iDeploy.app.tar.gz.sig', { encoding: 'utf-8' });
 const packageInfo = JSON.parse(content);
 const versionContent = `{
     "version": "v${packageInfo.version}",
@@ -24,11 +27,11 @@ const versionContent = `{
     "pub_date": "${(new Date()).toISOString()}",
     "platforms": {
         "darwin-x86_64": {
-            "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHJzaWduIGVuY3J5cHRlZCBzZWNyZXQga2V5ClJXUlRZMEl5a1JIbXBSWko2aE5jOG4yTjg4U0wrNE9lWVVNR3Y1ZGpSUFVuOHFWNmdOWUFBQkFBQUFBQUFBQUFBQUlBQUFBQW1TblhQZ3lqa1dsRUlJWGdEVTJwU01qZHRXKzh5dE9xK3AyMmpSbjVrK1RqYmtPemlGZHNDQkl6K09yOXRKUVBSSWN2emlnMjdwQkNPbFcvbEQ2bmprdFZOM0RxQy9zWXkzb3B0UVlRbG9NUEhzSFNPQ0xHcllpcHBuT29jb0hacUVjaTY1QVBwNkk9Cg==",
+            "signature": "${x86Signature}",
             "url": "https://oss.uiseed.cn/app/${packageInfo.name}/x86/${packageInfo.name}.app.tar.gz"
         },
         "darwin-aarch64": {
-            "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHJzaWduIGVuY3J5cHRlZCBzZWNyZXQga2V5ClJXUlRZMEl5a1JIbXBSWko2aE5jOG4yTjg4U0wrNE9lWVVNR3Y1ZGpSUFVuOHFWNmdOWUFBQkFBQUFBQUFBQUFBQUlBQUFBQW1TblhQZ3lqa1dsRUlJWGdEVTJwU01qZHRXKzh5dE9xK3AyMmpSbjVrK1RqYmtPemlGZHNDQkl6K09yOXRKUVBSSWN2emlnMjdwQkNPbFcvbEQ2bmprdFZOM0RxQy9zWXkzb3B0UVlRbG9NUEhzSFNPQ0xHcllpcHBuT29jb0hacUVjaTY1QVBwNkk9Cg==",
+            "signature": "${armSignature}",
             "url": "https://oss.uiseed.cn/app/${packageInfo.name}/arm/${packageInfo.name}.app.tar.gz"
         }
     }
