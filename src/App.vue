@@ -1,7 +1,33 @@
 <script setup lang="ts">
 // This starter template is using Vue 3 <script setup> SFCs
 // Check out https://vuejs.org/api/sfc-script-setup.html#script-setup
+import { onMounted, ref, toRefs } from 'vue';
+import { checkUpdate, installUpdate, UpdateManifest } from '@tauri-apps/api/updater'
+import { relaunch } from '@tauri-apps/api/process';
+import { listen } from '@tauri-apps/api/event'
+
 import Greet from "./components/Greet.vue";
+onMounted(async () => {
+  listen('tauri://update-status', function (res) {
+    console.log('New status: ', res)
+  })
+  // 检查更新
+  try {
+    const { shouldUpdate, manifest } = await checkUpdate();
+    console.log('检查更新', shouldUpdate);
+    if (shouldUpdate) {
+      // updateVisible.value = true;
+      // updateInfo.value = manifest;
+      console.log('manifest ->', manifest);
+      // // display dialog
+      await installUpdate()
+      // install complete, restart app
+      await relaunch()
+    }
+  } catch (error) {
+    console.error('错误信息 ->', error)
+  }
+});
 </script>
 
 <template>
@@ -31,13 +57,9 @@ import Greet from "./components/Greet.vue";
       +
       <a href="https://github.com/johnsoncodehk/volar" target="_blank">Volar</a>
       +
-      <a href="https://github.com/tauri-apps/tauri-vscode" target="_blank"
-        >Tauri</a
-      >
+      <a href="https://github.com/tauri-apps/tauri-vscode" target="_blank">Tauri</a>
       +
-      <a href="https://github.com/rust-lang/rust-analyzer" target="_blank"
-        >rust-analyzer</a
-      >
+      <a href="https://github.com/rust-lang/rust-analyzer" target="_blank">rust-analyzer</a>
     </p>
 
     <Greet />
